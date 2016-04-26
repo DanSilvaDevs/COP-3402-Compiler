@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "constants.h"
+#include "structs.h"
 
 char* errorCodes[] = {
   "", // This is just here so I don't have to index errors starting at 0
