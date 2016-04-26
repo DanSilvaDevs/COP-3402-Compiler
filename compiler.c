@@ -1,6 +1,9 @@
 #include "lexer.h"
 #include "parser.h"
+// TODO: #include "vm.h"
 
 int main() {
-  return 0;
+  generateLexemes();
+  parse();
+  // TODO: runProgram();
 }
