@@ -1,3 +1,8 @@
+default: compiler
+
+compiler:
+	gcc compiler.c -o compiler
+
 parser:
 	gcc parser.c -o parser
 
