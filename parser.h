@@ -37,7 +37,7 @@ char* errorCodes[] = {
   "26. Read and write must be followed by an identifier."
 };
 
-int main();
+void parse();
 void readTokens();
 void getToken();
 void program();

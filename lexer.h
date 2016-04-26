@@ -8,6 +8,7 @@
 #include "constants.h"
 #include "structs.h"
 
+void generateLexemes();
 int isletter(char c);
 void cleanRawFile();
 int parseWordType(char *val);

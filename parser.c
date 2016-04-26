@@ -21,7 +21,7 @@ int symbolIndex = 0;
 // The current block level
 int level = 0;
 
-int main() {
+void parse() {
   // Read the tokens from lexemelist.txt into tokenList
   readTokens();
 

@@ -1,6 +1,6 @@
 #include "lexer.h"
 
-int main() {
+void generateLexemes() {
   Token *token;
   Token *tokens[MAX_TOKENS];
   int tokenCount = 0;
