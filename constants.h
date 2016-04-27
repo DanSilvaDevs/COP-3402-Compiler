@@ -12,5 +12,7 @@
 #define CLEAN_INPUT_PATH "cleaninput.txt"
 #define LEXEME_TABLE_PATH "lexemetable.txt"
 #define LEXEME_LIST_PATH "lexemelist.txt"
+#define MAX_STACK_HEIGHT 200
+#define CODE_LENGTH 500
 
 #endif

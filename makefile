@@ -10,6 +10,7 @@ lexer:
 	gcc lexer.c -o lexer
 
 clean:
+	rm -f compiler
 	rm -f parser
 	rm -f lexer
 	rm -f lexemelist.txt
