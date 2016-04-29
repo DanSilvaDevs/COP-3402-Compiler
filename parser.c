@@ -477,13 +477,37 @@ void condition() {
 }
 
 void expression() {
-  // Parse the required term.
-  term();
+  int op;
+  // If we precede the term with a plus or minus, special handling is needed
+  if (token->type == plussym || token->type == minussym) {
+    op = token->type;
 
-  // Continue to parse terms while the next symbol is a + or -
-  while (token->type == plussym || token->type == minussym) {
     getToken();
     term();
+
+    // Negate the result if a minussym precedes it
+    if (op == minussym) {
+      addInstruction(OPR, 0, NEG);
+    }
+  }
+
+  // Otherwise, just a parse a term
+  else {
+    term();
+  }
+
+  while (token->type == plussym || token->type == minussym) {
+    op = token->type;
+
+    getToken();
+    term();
+
+    if (op == plussym) {
+      addInstruction(OPR, 0, ADD);
+    }
+    else {
+      addInstruction(OPR, 0, SUB);
+    }
   }
 }
 
