@@ -16,7 +16,7 @@ typedef enum {
 } token_type;
 
 typedef enum {
-    consttype = 1, vartype, proctype
+    constkind = 1, varkind, prockind
 } symbol_type;
 
 typedef struct {
@@ -42,5 +42,9 @@ typedef enum {
 typedef enum {
     RTN = 0, NEG, ADD, SUB, MUL, DIV, ODD, MOD, EQL, NEQ, LSS, LEQ, GTR, GEQ
 } m_code;
+
+typedef enum {
+  WRITE = 1, READ, HALT
+} sio_type;
 
 #endif

@@ -51,7 +51,7 @@ void program() {
   }
 
   // Add the halt instruction
-  addInstruction(SIO, 0, 3);
+  addInstruction(SIO, 0, HALT);
 }
 
 void block() {
@@ -120,7 +120,7 @@ void constant() {
     }
 
     // Insert the constant into our symbol table
-    insertSym(ident->val, atoi(token->val), consttype, 0);
+    insertSym(ident->val, atoi(token->val), constkind, 0);
     getToken();
   } while (token->type == commasym);
 
@@ -152,7 +152,7 @@ int variable() {
     // We use numVariables + 4 to indicate its position
     // in the current AR; starting at 4 since its offset is
     // 4 by default.
-    insertSym(token->val, -1, vartype, numVariables + 4);
+    insertSym(token->val, -1, varkind, numVariables + 4 /* +3? */);
     getToken();
 
     // Create space for each of the variables
@@ -188,7 +188,7 @@ void procedure(int jmpIndex) {
   // Insert our procdure's identifier into the symbol table.
   // Because we aren't generating code, I'm settings its val
   // to -1.
-  insertSym(token->val, -1, proctype, jmpIndex + 1);
+  insertSym(token->val, -1, prockind, jmpIndex + 1);
 
   // Modify the procedure's level and address.
   symbolTable[symbolIndex-1]->level = level;
@@ -230,7 +230,7 @@ void statement() {
 
     // If the symbol is not a variable
     // (it is a constant or procedure) throw an error
-    if (sym->kind != vartype) {
+    if (sym->kind != varkind) {
       error(12);
     }
 
@@ -251,6 +251,9 @@ void statement() {
     // Parse the expression that follows :=
     getToken();
     expression();
+
+    // Store the result at the appropriate symbol's address
+    addInstruction(STO, level - sym->level, sym->addr /* -1? */);
   }
 
   // If 'call' is found, we're looking for
@@ -272,9 +275,12 @@ void statement() {
 
     // If the symbol is not a procedure
     // (it is a constant or variable) throw an error
-    if (sym->kind != proctype) {
+    if (sym->kind != prockind) {
       error(15);
     }
+
+    // Add the instruction to jump to the procedure
+    addInstruction(CAL, level, sym->addr);
 
     getToken();
   }
@@ -320,19 +326,53 @@ void statement() {
       error(16);
     }
 
+    // Save the index of our instructions to
+    // modify the JPC later.
+    int tempIfIndex = codeIndex;
+
+    // Conditional jump. Decides if we do or don't skip the
+    // `if` code.
+    addInstruction(JPC, 0, 0);
+
     // Parse the statement following the "then"
     getToken();
     statement();
 
+    // Modify the JPC's `m` to point to the new index
+    code[tempIfIndex]->m = codeIndex;
+
     // Else group is optional.
     if (token->type == elsesym) {
+
+      // Store the current code index again.
+      // Used to modify the following JMP
+      int tempElseIndex = codeIndex;
+
+      // Add a JMP instruction
+      addInstruction(JMP, 0, 0);
+
       getToken();
       statement();
+
+      // Change the `m` of the JMP 
+      // to be the current code index.
+      code[tempElseIndex]->m = codeIndex;
     }
   }
+
   else if (token->type == whilesym) {
+    // Store the current instruction index
+    int tempIndex1 = codeIndex;
+
     // Parse the condition following the "while"
     condition();
+
+    // Store the current instruction index
+    int tempIndex2 = codeIndex;
+
+    // Generate a JPC to potentially skip the contents of
+    // the loop
+    addInstruction(JPC, 0, 0);
 
     // If the condition isn't followed by "do",
     // throw an error.
@@ -343,8 +383,38 @@ void statement() {
     // Parse the statement after the "do"
     getToken();
     statement();
+
+    // Add a JPC to potentially restart the loop
+    addInstruction(JMP, 0, tempIndex1);
+
+    // Modifies the JPC to skip to the current index if the condition isn't true
+    code[tempIndex2]->m = codeIndex;
   }
-  else if (token->type == writesym || token->type == readsym) {
+
+  else if (token->type == readsym) {
+    getToken();
+
+    Symbol *sym = findInTable(token->val);
+    if (!sym) {
+      // Undeclared identifier found
+      error(11);
+    }
+
+    // Read the input from the user
+    addInstruction(SIO, 0, READ);
+
+    // If the identifier isn't a variable, throw an error
+    if (sym->kind != varkind) {
+      error(12);
+    }
+
+    // Store the data in the correct location
+    addInstruction(STO, level - sym->level, sym->addr /* -1? */);
+
+    getToken();
+  }
+
+  else if (token->type == writesym) {
     getToken();
 
     // Read/write must be followed by an identifier.
@@ -359,6 +429,19 @@ void statement() {
       // Undeclared identifier found
       error(11);
     }
+
+    // If it's a variable, retrieve it from memory
+    if (sym->kind == varkind) {
+      addInstruction(LOD, level - sym->level, sym->addr /* -1? */);
+    }
+
+    // If it's a constant, push a literal onto the stack
+    if (sym->kind == constkind) {
+      addInstruction(LIT, 0, sym->val);
+    }
+
+    // Write the value to the screen
+    addInstruction(SIO, 0, WRITE);
 
     getToken();
   }
@@ -568,9 +651,9 @@ void printSymbolsTable() {
 
     // Print the symbol's type
     switch (currentSym->kind) {
-      case consttype: fprintf(output, "%s\t", "const"); break;
-      case vartype: fprintf(output, "%s\t", "var"); break;
-      case proctype: fprintf(output, "%s\t", "proc"); break;
+      case constkind: fprintf(output, "%s\t", "const"); break;
+      case varkind: fprintf(output, "%s\t", "var"); break;
+      case prockind: fprintf(output, "%s\t", "proc"); break;
       default: fprintf(output, "type is %d\t", currentSym->kind); exit(0);
     }
 
