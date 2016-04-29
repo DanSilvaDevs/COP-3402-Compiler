@@ -512,13 +512,24 @@ void expression() {
 }
 
 void term() {
+  int op;
+
   // Parse the required factor.
   factor();
 
   // Continue to parse factors while the next symbol is a * or /
   while (token->type == multsym || token->type == slashsym) {
+    op = token->type;
+
     getToken();
     factor();
+
+    if (op == multsym) {
+      addInstruction(OPR, 0, MUL);
+    }
+    else {
+      addInstruction(OPR, 0, DIV);
+    }
   }
 }
 
