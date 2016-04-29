@@ -43,7 +43,7 @@ void getToken();
 void program();
 void constant();
 int variable();
-void procedure();
+void procedure(int jmpIndex);
 void block();
 void statement();
 void expression();

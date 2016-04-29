@@ -1,5 +1,3 @@
-#include "constants.h"
-#include "structs.h"
 #include "parser.h"
 
 // The array containing tokens from lexemelist.txt
@@ -60,6 +58,13 @@ void block() {
   // The space needed for the return value, SL, DL, and return address
   int space = 4;
 
+  // Save the index of the jump instruction
+  // so we can modify its `m` later.
+  int jmpIndex = codeIndex;
+
+  // Create the jump instruction.
+  addInstruction(JMP, 0, 0);
+
   // Parse constants first.
   if (token->type == constsym) {
     constant();
@@ -74,8 +79,15 @@ void block() {
 
   // Parse procedures last
   while (token->type == procsym) {
-    procedure();
+    procedure(jmpIndex);
   }
+
+  // Change the previously added JMP's `m`
+  // to the current code index.
+  code[jmpIndex]->m = codeIndex;
+
+  // Allocate space for our variables
+  addInstruction(INC, 0, space);
 
   // Parse a statement next, after we're done defining
   // constants, vars, and procedures
@@ -161,7 +173,7 @@ int variable() {
   return numVariables;
 }
 
-void procedure() {
+void procedure(int jmpIndex) {
   // If 'procedure' isn't followed by an identifier, throw an error.
   getToken();
   if (token->type != identsym) {
@@ -177,6 +189,10 @@ void procedure() {
   // Because we aren't generating code, I'm settings its val
   // to -1.
   insertSym(token->val, -1, proctype);
+
+  // Modify the procedure's level and address.
+  symbolTable[symbolIndex-1]->level = level;
+  symbolTable[symbolIndex-1]->addr = jmpIndex + 1;
 
   // Increase the level by one
   ++level;
@@ -579,7 +595,7 @@ void addInstruction(int op, int l, int m) {
   inst->l = l;
   inst->m = m;
 
-  code[codeIndex] = inst;
+  code[codeIndex++] = inst;
 }
 
 void error(int code) {
