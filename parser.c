@@ -542,12 +542,25 @@ void factor() {
       error(11);
     }
     getToken();
+
+    // If it's a variable, load it from memory
+    if (sym->kind == varkind) {
+      addInstruction(LOD, level - sym->level, sym->addr /* -1? */);
+    }
+
+    // If it's a constant, use LIT
+    else if (sym->kind == constkind) {
+      addInstruction(LIT, 0, sym->val);
+    }
   }
 
   // If we've got a number, we're good to go.
   // No further actions to take.
   else if (token->type == numbersym) {
     getToken();
+
+    // Use LIT to push the number to the stack
+    addInstruction(LIT, 0, atoi(token->val));
   }
 
   // If we have a left parenthesis,
