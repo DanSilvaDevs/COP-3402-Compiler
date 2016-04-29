@@ -120,7 +120,7 @@ void constant() {
     }
 
     // Insert the constant into our symbol table
-    insertSym(ident->val, atoi(token->val), consttype);
+    insertSym(ident->val, atoi(token->val), consttype, 0);
     getToken();
   } while (token->type == commasym);
 
@@ -152,7 +152,7 @@ int variable() {
     // We use numVariables + 4 to indicate its position
     // in the current AR; starting at 4 since its offset is
     // 4 by default.
-    insertSym(token->val, numVariables + 4, vartype);
+    insertSym(token->val, -1, vartype, numVariables + 4);
     getToken();
 
     // Create space for each of the variables
@@ -188,11 +188,10 @@ void procedure(int jmpIndex) {
   // Insert our procdure's identifier into the symbol table.
   // Because we aren't generating code, I'm settings its val
   // to -1.
-  insertSym(token->val, -1, proctype);
+  insertSym(token->val, -1, proctype, jmpIndex + 1);
 
   // Modify the procedure's level and address.
   symbolTable[symbolIndex-1]->level = level;
-  symbolTable[symbolIndex-1]->addr = jmpIndex + 1;
 
   // Increase the level by one
   ++level;
@@ -484,7 +483,7 @@ Symbol* findInTable(char *ident) {
   return NULL;
 }
 
-void insertSym(char *ident, int val, int kind) {
+void insertSym(char *ident, int val, int kind, int addr) {
   // Return if the symbol already exists in the table
   if (findInTable(ident)) {
     return;

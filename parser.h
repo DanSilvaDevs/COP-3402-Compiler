@@ -53,7 +53,7 @@ void factor();
 int relation();
 
 Symbol* findInTable(char *ident);
-void insertSym(char* ident, int val, int kind);
+void insertSym(char* ident, int val, int kind, int addr);
 void printSymbolsTable();
 void error(int code);
 
