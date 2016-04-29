@@ -57,4 +57,5 @@ void insertSym(char* ident, int val, int kind);
 void printSymbolsTable();
 void error(int code);
 
+void addInstruction(int op, int l, int m);
 #endif

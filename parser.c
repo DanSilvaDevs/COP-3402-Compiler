@@ -21,6 +21,12 @@ int symbolIndex = 0;
 // The current block level
 int level = 0;
 
+// The index of instructions
+int codeIndex = 0;
+
+// The array of all instructions
+Instruction* code[MAX_INSTRUCTIONS];
+
 void parse() {
   // Read the tokens from lexemelist.txt into tokenList
   readTokens();
@@ -561,6 +567,16 @@ void printSymbolsTable() {
       fprintf(output, "%d\n", currentSym->val);
     }
   }
+}
+
+void addInstruction(int op, int l, int m) {
+  Instruction *inst = (Instruction*)(malloc(sizeof(Instruction)));
+
+  inst->op = op;
+  inst->l = l;
+  inst->m = m;
+
+  code[codeIndex] = inst;
 }
 
 void error(int code) {
