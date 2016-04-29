@@ -451,6 +451,9 @@ void condition() {
   // If the token is oddsym,
   // the condition is "oddsym expression"
   if (token->type == oddsym) {
+    // Add the ODD instruction
+    addInstruction(OPR, 0, ODD);
+
     getToken();
     expression();
   }
@@ -467,6 +470,9 @@ void condition() {
 
     getToken();
     expression();
+
+    // Add the appropriate OPR instruction
+    addInstruction(OPR, 0, relationType());
   }
 }
 
@@ -678,6 +684,10 @@ void addInstruction(int op, int l, int m) {
   inst->m = m;
 
   code[codeIndex++] = inst;
+}
+
+int relationType() {
+  return token->type - 1; /* 1 is the offset between the token's type and the OPR code */
 }
 
 void error(int code) {
