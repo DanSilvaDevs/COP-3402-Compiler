@@ -51,6 +51,9 @@ void program() {
   if (token->type != periodsym) {
     error(9);
   }
+
+  // Add the halt instruction
+  addInstruction(SIO, 0, 3);
 }
 
 void block() {
