@@ -557,7 +557,6 @@ void factor() {
 
     // If it's a constant, use LIT
     else if (sym->kind == constkind) {
-      printf("Adding LIT\n");
       addInstruction(LIT, 0, sym->val);
     }
   }
