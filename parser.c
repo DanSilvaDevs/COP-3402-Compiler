@@ -155,7 +155,7 @@ int variable() {
     // We use numVariables + 4 to indicate its position
     // in the current AR; starting at 4 since its offset is
     // 4 by default.
-    insertSym(token->val, -1, varkind, numVariables + 4 /* +3? */);
+    insertSym(token->val, -1, varkind, numVariables + 4);
     getToken();
 
     // Create space for each of the variables
@@ -258,7 +258,7 @@ void statement() {
     expression();
 
     // Store the result at the appropriate symbol's address
-    addInstruction(STO, level - sym->level, sym->addr /* -1? */);
+    addInstruction(STO, level - sym->level, sym->addr);
   }
 
   // If 'call' is found, we're looking for
@@ -413,7 +413,7 @@ void statement() {
     }
 
     // Store the data in the correct location
-    addInstruction(STO, level - sym->level, sym->addr /* -1? */);
+    addInstruction(STO, level - sym->level, sym->addr);
 
     getToken();
   }
@@ -436,7 +436,7 @@ void statement() {
 
     // If it's a variable, retrieve it from memory
     if (sym->kind == varkind) {
-      addInstruction(LOD, level - sym->level, sym->addr /* -1? */);
+      addInstruction(LOD, level - sym->level, sym->addr);
     }
 
     // If it's a constant, push a literal onto the stack
@@ -552,7 +552,7 @@ void factor() {
 
     // If it's a variable, load it from memory
     if (sym->kind == varkind) {
-      addInstruction(LOD, level - sym->level, sym->addr /* -1? */);
+      addInstruction(LOD, level - sym->level, sym->addr);
     }
 
     // If it's a constant, use LIT
