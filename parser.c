@@ -33,10 +33,13 @@ void parse() {
   program();
 
   // Let the user know the program is grammatically correct.
-  printf("No errors, program is syntactically correct.");
+  printf("No errors, program is syntactically correct.\n");
 
   // Print the symbol list to symlist.txt
   printSymbolsTable();
+
+  // Print the instructions to mcode.txt
+  printInstructions();
 }
 
 void program() {
@@ -51,7 +54,7 @@ void program() {
   }
 
   // Add the halt instruction
-  addInstruction(SIO, 0, HALT);
+  addInstruction(SIO3, 0, HALT);
 }
 
 void block() {
@@ -211,6 +214,8 @@ void procedure(int jmpIndex) {
   if (token->type != semicolonsym) {
     error(10);
   }
+
+  addInstruction(OPR, 0, RTN); 
 
   getToken();
 
@@ -400,7 +405,7 @@ void statement() {
     }
 
     // Read the input from the user
-    addInstruction(SIO, 0, READ);
+    addInstruction(SIO2, 0, READ);
 
     // If the identifier isn't a variable, throw an error
     if (sym->kind != varkind) {
@@ -440,7 +445,7 @@ void statement() {
     }
 
     // Write the value to the screen
-    addInstruction(SIO, 0, WRITE);
+    addInstruction(SIO1, 0, WRITE);
 
     getToken();
   }
@@ -462,6 +467,8 @@ void condition() {
     getToken();
     expression();
 
+    int rel = relationType();
+
     // If we don't find a relation operator,
     // throw an error.
     if (!relation()) {
@@ -472,7 +479,7 @@ void condition() {
     expression();
 
     // Add the appropriate OPR instruction
-    addInstruction(OPR, 0, relationType());
+    addInstruction(OPR, 0, rel);
   }
 }
 
@@ -550,6 +557,7 @@ void factor() {
 
     // If it's a constant, use LIT
     else if (sym->kind == constkind) {
+      printf("Adding LIT\n");
       addInstruction(LIT, 0, sym->val);
     }
   }
@@ -557,10 +565,10 @@ void factor() {
   // If we've got a number, we're good to go.
   // No further actions to take.
   else if (token->type == numbersym) {
-    getToken();
-
     // Use LIT to push the number to the stack
     addInstruction(LIT, 0, atoi(token->val));
+
+    getToken();
   }
 
   // If we have a left parenthesis,
@@ -630,6 +638,7 @@ void insertSym(char *ident, int val, int kind, int addr) {
   sym->val = val;
   sym->kind = kind;
   sym->level = level;
+  sym->addr = addr;
 
   // If the symbol is a variable/constant,
   // store the name of the procedure it is defined in.
@@ -727,6 +736,16 @@ void addInstruction(int op, int l, int m) {
   inst->m = m;
 
   code[codeIndex++] = inst;
+}
+
+void printInstructions() {
+  FILE *out = fopen("mcode.txt", "w");
+  int i;
+
+  for (i = 0; i < codeIndex; i++) {
+    Instruction *inst = code[i];
+    fprintf(out, "%d %d %d\n", inst->op, inst->l, inst->m);
+  }
 }
 
 int relationType() {

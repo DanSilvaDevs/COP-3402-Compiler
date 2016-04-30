@@ -59,5 +59,6 @@ void error(int code);
 
 void addInstruction(int op, int l, int m);
 int relationType();
+void printInstructions();
 
 #endif

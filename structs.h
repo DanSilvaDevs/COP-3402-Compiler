@@ -36,7 +36,7 @@ typedef struct {
 } Instruction;
 
 typedef enum {
-    LIT = 1, OPR, LOD, STO, CAL, INC, JMP, JPC, SIO
+    LIT = 1, OPR, LOD, STO, CAL, INC, JMP, JPC, SIO1, SIO2, SIO3
 } op_code;
 
 typedef enum {
