@@ -745,6 +745,7 @@ void printInstructions() {
     Instruction *inst = code[i];
     fprintf(out, "%d %d %d\n", inst->op, inst->l, inst->m);
   }
+  fclose(out);
 }
 
 int relationType() {

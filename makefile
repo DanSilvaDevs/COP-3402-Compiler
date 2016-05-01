@@ -16,3 +16,5 @@ clean:
 	rm -f lexemelist.txt
 	rm -f lexemetable.txt
 	rm -f symlist.txt
+	rm -f mcode.txt
+	rm -f stacktrace.txt
