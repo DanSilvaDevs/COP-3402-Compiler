@@ -624,7 +624,7 @@ Symbol* findInTable(char *ident) {
 
 void insertSym(char *ident, int val, int kind, int addr) {
   // Return if the symbol already exists in the table
-  if (findInTable(ident)) {
+  if (kind != varkind && findInTable(ident)) {
     return;
   }
 
