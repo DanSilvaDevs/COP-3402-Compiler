@@ -349,6 +349,9 @@ void statement() {
     // Add a JMP instruction
     addInstruction(JMP, 0, 0);
 
+    // Modify the JPC's `m` to point to the new index
+    code[tempIfIndex]->m = codeIndex;
+
     // Else group is optional.
     if (token->type == elsesym) {
       getToken();
@@ -358,9 +361,6 @@ void statement() {
     // Change the `m` of the JMP 
     // to be the current code index.
     code[tempElseIndex]->m = codeIndex;
-
-    // Modify the JPC's `m` to point to the new index
-    code[tempIfIndex]->m = codeIndex;
 
   }
 
