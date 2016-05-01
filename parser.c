@@ -679,6 +679,7 @@ void readTokens() {
 
   // Print a newline for formatting sake
   printf("\n\n");
+  fclose(input);
 }
 
 void getToken() {
@@ -711,20 +712,21 @@ void printSymbolsTable() {
       case constkind: fprintf(output, "%s\t", "const"); break;
       case varkind: fprintf(output, "%s\t", "var"); break;
       case prockind: fprintf(output, "%s\t", "proc"); break;
-      default: fprintf(output, "type is %d\t", currentSym->kind); exit(0);
     }
 
     // Print the level
     fprintf(output, "%d\t", currentSym->level);
 
-    // Print the val unless it's a procedure,
-    // meaning val == -1
-    if (currentSym->val == -1){
-      fprintf(output, "\n");
-    } else {
-      fprintf(output, "%d\n", currentSym->val);
+    switch (currentSym->kind) {
+      case constkind: fprintf(output, "%d\t", currentSym->val); break;
+      case varkind: fprintf(output, "%d\t", currentSym->addr); break;
+      case prockind: fprintf(output, "%d\t", currentSym->addr); break;
     }
+
+    fprintf(output, "\n");
   }
+
+  fclose(output);
 }
 
 void addInstruction(int op, int l, int m) {
