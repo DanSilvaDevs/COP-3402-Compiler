@@ -11,8 +11,7 @@ lexer:
 
 clean:
 	rm -f compiler
-	rm -f parser
-	rm -f lexer
+	rm -f cleaninput.txt
 	rm -f lexemelist.txt
 	rm -f lexemetable.txt
 	rm -f symlist.txt
