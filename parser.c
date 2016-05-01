@@ -285,7 +285,7 @@ void statement() {
     }
 
     // Add the instruction to jump to the procedure
-    addInstruction(CAL, level, sym->addr);
+    addInstruction(CAL, level - sym->level, sym->addr);
 
     getToken();
   }
